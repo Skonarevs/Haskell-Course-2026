@@ -2,24 +2,50 @@ cabal-version:      2.4
 name:               quantum-lang
 version:            0.1.0.0
 synopsis:           A small DSL and simulator for quantum circuits
-description:        Quantum computing language — parser and state-vector simulator.
+description:        Quantum computing language - parser and state-vector simulator.
 license:            NONE
 author:             Haskell Course 2026
 maintainer:         haskell-course-2026
 
+library
+  hs-source-dirs:   src
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  exposed-modules:
+      QuantumLang.Types
+      QuantumLang.Lexer
+      QuantumLang.Parser
+      QuantumLang.Simulator
+      QuantumLang.Interpreter
+      QuantumLang.Run
+      QuantumLang.Errors
+      QuantumLang.Circuit
+  build-depends:
+      base >=4.16 && <5,
+      containers >=0.6 && <0.8,
+      random >=1.2 && <1.4
+
 executable quantum-lang
   main-is:          Main.hs
-  hs-source-dirs:   src
+  hs-source-dirs:   app
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.16 && <5,
+      quantum-lang
+
+test-suite quantum-lang-test
+  type:             exitcode-stdio-1.0
+  main-is:          Spec.hs
+  hs-source-dirs:   test
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
       base >=4.16 && <5,
       containers >=0.6 && <0.8,
-      random >=1.2 && <1.4
-  other-modules:
-      QuantumLang.Types,
-      QuantumLang.Lexer,
-      QuantumLang.Parser,
-      QuantumLang.Simulator,
-      QuantumLang.Interpreter,
-      QuantumLang.Run
+      random >=1.2 && <1.4,
+      QuickCheck >=2.14 && <2.16,
+      tasty >=1.4 && <1.6,
+      tasty-hunit >=0.3 && <0.11,
+      tasty-quickcheck >=0.10 && <0.12,
+      quantum-lang

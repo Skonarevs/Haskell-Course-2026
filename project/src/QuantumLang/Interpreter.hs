@@ -1,5 +1,6 @@
 module QuantumLang.Interpreter
   ( runProgram,
+    runProgramWith,
   )
 where
 
@@ -15,12 +16,14 @@ data Machine = Machine
   }
 
 runProgram :: Program -> IO (Either String ())
-runProgram (Program stmts) = do
+runProgram prog = do
+  result <- runProgramWith prog
+  pure (fmap (const ()) result)
+
+runProgramWith :: Program -> IO (Either String (Map String Int))
+runProgramWith (Program stmts) = do
   result <- execStmts stmts
-  pure (void result)
-  where
-    void (Left err) = Left err
-    void (Right _) = Right ()
+  pure (fmap mClassical result)
 
 execStmts :: [Statement] -> IO (Either String Machine)
 execStmts [] = pure (Left "program must start with init")

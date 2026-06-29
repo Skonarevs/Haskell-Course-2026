@@ -5,14 +5,17 @@ module QuantumLang.Run
   )
 where
 
+import QuantumLang.Circuit (renderCircuit)
+import QuantumLang.Errors (formatParseError)
 import QuantumLang.Interpreter (runProgram)
-import QuantumLang.Parser (ParseError (..), parseProgram)
+import QuantumLang.Parser (parseProgram)
 import System.Exit (ExitCode (..), exitFailure, exitSuccess)
 import System.Random (mkStdGen, setStdGen)
 
 data RunConfig = RunConfig
   { rcLabel :: String,
     rcShowAst :: Bool,
+    rcShowCircuit :: Bool,
     rcSeed :: Maybe Int
   }
 
@@ -21,6 +24,7 @@ defaultConfig label =
   RunConfig
     { rcLabel = label,
       rcShowAst = False,
+      rcShowCircuit = False,
       rcSeed = Nothing
     }
 
@@ -32,9 +36,12 @@ runSource config source = do
   case parseProgram source of
     Left err -> do
       putStrLn $ "Parse error in " ++ rcLabel config ++ ":"
-      printParseError err
+      putStrLn (formatParseError source err)
       exitFailure
     Right prog -> do
+      when (rcShowCircuit config) $ do
+        putStrLn (renderCircuit prog)
+        putStrLn ""
       when (rcShowAst config) $ do
         putStrLn "Parsed program:"
         print prog
@@ -45,10 +52,6 @@ runSource config source = do
           putStrLn $ "Runtime error: " ++ err
           exitFailure
         Right () -> exitSuccess
-
-printParseError :: ParseError -> IO ()
-printParseError (ParseError line col msg) =
-  putStrLn $ "  line " ++ show line ++ ", column " ++ show col ++ ": " ++ msg
 
 when :: Bool -> IO () -> IO ()
 when True io = io

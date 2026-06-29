@@ -16,7 +16,7 @@ main = do
         Left err -> hPutStrLn stderr err >> exitFailure
         Right (config, path) -> do
           source <- readFile path
-          putStrLn "quantum-lang (part 4 - complete)"
+          putStrLn "quantum-lang"
           putStrLn ""
           exitWith =<< runSource config {rcLabel = path} source
 
@@ -28,6 +28,7 @@ parseArgs args = go (defaultConfig "program.ql") args
       | isOption path = Left $ "unknown option: " ++ path
       | otherwise = Right (cfg, path)
     go cfg ("--ast" : rest) = go cfg {rcShowAst = True} rest
+    go cfg ("--circuit" : rest) = go cfg {rcShowCircuit = True} rest
     go cfg ("--seed" : value : rest) =
       case reads value of
         [(seed, "")] -> go cfg {rcSeed = Just seed} rest
@@ -43,17 +44,20 @@ helpText =
     [ "quantum-lang - quantum circuit DSL interpreter",
       "",
       "Usage:",
-      "  quantum-lang [--ast] [--seed N] <file.ql>",
+      "  quantum-lang [--ast] [--circuit] [--seed N] <file.ql>",
       "",
       "Options:",
       "  --ast       parse and print the AST before running",
+      "  --circuit   render an ASCII circuit diagram before running",
       "  --seed N    fix the RNG seed for reproducible measurement outcomes",
       "  --help      show this help text",
       "",
+      "Run tests:",
+      "  cabal test",
+      "",
       "Examples:",
       "  quantum-lang examples/bell.ql",
-      "  quantum-lang examples/teleport.ql",
-      "  quantum-lang examples/deutsch.ql",
+      "  quantum-lang --circuit examples/teleport.ql",
       "  quantum-lang --seed 42 examples/bell.ql",
       "",
       "Example programs:",

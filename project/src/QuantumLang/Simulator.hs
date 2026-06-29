@@ -3,11 +3,16 @@ module QuantumLang.Simulator
     initialState,
     applyGate,
     measureQubit,
+    measureQubitWith,
+    isNormalized,
+    normSquared,
+    gateMatrix,
+    isUnitary2,
   )
 where
 
 import Data.Bits (Bits (..))
-import Data.Complex (Complex (..), magnitude, mkPolar)
+import Data.Complex (Complex (..), conjugate, magnitude, mkPolar)
 import QuantumLang.Types (Gate (..))
 import System.Random (randomIO)
 
@@ -69,16 +74,53 @@ applyCNOT n control target psi
 
 measureQubit :: Int -> Int -> Amplitudes -> IO (Int, Amplitudes)
 measureQubit n q psi = do
+  r <- randomIO
+  pure (measureQubitWith r n q psi)
+
+measureQubitWith :: Double -> Int -> Int -> Amplitudes -> (Int, Amplitudes)
+measureQubitWith r n q psi =
   let p0 =
         sum
           [ magnitude (psi !! i) ^ (2 :: Int)
           | i <- [0 .. 2 ^ n - 1],
             not (testBit i q)
           ]
-  r <- randomIO
-  let outcome = if r < p0 then 0 else 1
+      outcome = if r < p0 then 0 else 1
       collapsed = normalize (collapseQubit q outcome psi)
-  pure (outcome, collapsed)
+   in (outcome, collapsed)
+
+isNormalized :: Amplitudes -> Bool
+isNormalized xs =
+  let total = normSquared xs
+   in abs (total - 1) < 1e-9 || total == 0
+
+normSquared :: Amplitudes -> Double
+normSquared xs = sum (map ((^(2 :: Int)) . magnitude) xs)
+
+gateMatrix :: Gate -> [[Complex Double]]
+gateMatrix gate = case gate of
+  H -> hMatrix
+  X -> xMatrix
+  Y -> yMatrix
+  Z -> zMatrix
+  Phase theta -> phaseMatrix theta
+  CNOT -> error "gateMatrix: CNOT is not a 2x2 gate"
+
+isUnitary2 :: [[Complex Double]] -> Bool
+isUnitary2 [[a, b], [c, d]] =
+  let ca = conjugate a
+      cb = conjugate b
+      cc = conjugate c
+      cd = conjugate d
+      u00 = a * ca + b * cb
+      u01 = a * cc + b * cd
+      u10 = c * ca + d * cb
+      u11 = c * cc + d * cd
+   in nearOne u00 && nearZero u01 && nearZero u10 && nearOne u11
+  where
+    nearZero z = magnitude z < 1e-9
+    nearOne z = magnitude (z - (1 :+ 0)) < 1e-9
+isUnitary2 _ = False
 
 collapseQubit :: Int -> Int -> Amplitudes -> Amplitudes
 collapseQubit q outcome psi =
