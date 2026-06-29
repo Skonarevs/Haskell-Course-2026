@@ -46,12 +46,12 @@ getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: 
 
 
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
-bindir     = "C:\\Users\\UranousPenny\\AppData\\Roaming\\cabal\\bin"
-libdir     = "C:\\Users\\UranousPenny\\AppData\\Roaming\\cabal\\x86_64-windows-ghc-9.10.3-b42a\\quantum-lang-0.1.0.0-inplace-quantum-lang"
-dynlibdir  = "C:\\Users\\UranousPenny\\AppData\\Roaming\\cabal\\x86_64-windows-ghc-9.10.3-b42a"
-datadir    = "C:\\Users\\UranousPenny\\AppData\\Roaming\\cabal\\x86_64-windows-ghc-9.10.3-b42a\\quantum-lang-0.1.0.0"
-libexecdir = "C:\\Users\\UranousPenny\\AppData\\Roaming\\cabal\\quantum-lang-0.1.0.0-inplace-quantum-lang\\x86_64-windows-ghc-9.10.3-b42a\\quantum-lang-0.1.0.0"
-sysconfdir = "C:\\Users\\UranousPenny\\AppData\\Roaming\\cabal\\etc"
+bindir     = "C:\\cabal\\bin"
+libdir     = "C:\\cabal\\x86_64-windows-ghc-9.10.3-b42a\\quantum-lang-0.1.0.0-inplace-quantum-lang"
+dynlibdir  = "C:\\cabal\\x86_64-windows-ghc-9.10.3-b42a"
+datadir    = "C:\\cabal\\x86_64-windows-ghc-9.10.3-b42a\\quantum-lang-0.1.0.0"
+libexecdir = "C:\\cabal\\quantum-lang-0.1.0.0-inplace-quantum-lang\\x86_64-windows-ghc-9.10.3-b42a\\quantum-lang-0.1.0.0"
+sysconfdir = "C:\\cabal\\etc"
 
 getBinDir     = catchIO (getEnv "quantum_lang_bindir")     (\_ -> return bindir)
 getLibDir     = catchIO (getEnv "quantum_lang_libdir")     (\_ -> return libdir)

@@ -13,9 +13,13 @@ executable quantum-lang
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
-      base >=4.16 && <5
+      base >=4.16 && <5,
+      containers >=0.6 && <0.8,
+      random >=1.2 && <1.4
   other-modules:
       QuantumLang.Types,
       QuantumLang.Lexer,
       QuantumLang.Parser,
-      QuantumLang.Interpreter
+      QuantumLang.Simulator,
+      QuantumLang.Interpreter,
+      QuantumLang.Run
